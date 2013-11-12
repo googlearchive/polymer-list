@@ -1,0 +1,94 @@
+<!doctype html>
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<html>
+  <head>
+    <title>list</title>
+    <meta name="viewport" content="width=device-width">
+    <script src="../platform/platform.js"></script>
+    <link rel="import" href="polymer-list.html">
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+      }
+      
+      list-test {
+        display: block;
+        max-width: 600px;
+        height: 100%;
+        margin: 0 auto;
+      }
+
+      .stuff {
+        min-height: 60px;
+        background: red !important;
+        border-bottom: 1px solid black;
+      }
+    </style>
+  </head>
+  <body>
+    <list-test></list-test>
+
+    <polymer-element name="list-test">
+      <template>
+        <style>
+          polymer-list {
+            height: 100%;
+          }
+
+          .header {
+            background: gray;
+            text: black;
+            font-weight: bold;
+          }
+
+          .item {
+            box-sizing: border-box;
+            height: 80px;
+            line-height: 80px;
+            padding: 0 20px;
+            border-bottom: 1px solid #ddd;
+            overflow: hidden;
+            background: #333;
+            color: white;
+          }
+
+          .polymer-selected {
+            background: whitesmoke;
+            color: black;
+          }
+        </style>
+        <polymer-list id="list" data="{{data}}" on-polymer-select="{{selectAction}}">
+          <template>
+            <div hidden?="{{!item.header}}" class="header">{{item.header}}: {{item.index}}</div>
+            <div class="item {{selected}}">Index: {{index}}</div>
+          </template>
+        </polymer-list>
+
+      </template>
+      <script>
+        Polymer('list-test', {
+          ready: function() {
+            var data = [];
+            for (var i=0, o; i< 50000; i++) {
+              o = {index: i};
+              if ((i+1) % 10 === 0) {
+                o.header = 'Header';
+              }
+              data.push(o);
+            }
+            this.data = data;
+          },
+          selectAction: function(e, detail) {
+            //this.data[detail.item].selected = detail.isSelected ? 'polymer-selected' : '';
+            //this.$.list.refresh();
+          }
+        })
+      </script>
+    </polymer-element>
+  </body>
+</html>

@@ -1,0 +1,188 @@
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../polymer-selection/polymer-selection.html">
+<link rel="import" href="polymer-virtual-list.html">
+
+<polymer-element name="polymer-list" extends="polymer-virtual-list" attributes="data multi selected" on-tap="{{tapAction}}">
+  <template>
+    <polymer-selection id="selection" multi="{{multi}}" on-polymer-select="{{selectedAction}}"></polymer-selection>
+    <shadow></shadow>
+  </template>
+  <script>
+    Polymer('polymer-list', {
+      selectedClass: 'polymer-selected',
+      multi: false,
+      ready: function() {
+        this.data = [];
+        this.listData = [];
+        this.super();
+      },
+      enteredView: function() {
+        this.template = this.querySelector('template');
+      },
+      dataChanged: function() {
+        this.count = this.data.length;
+        //console.log('dataChanged', this.count);
+      },
+      generatePageContent: function(page, start, end) {
+        this.super();
+        // add a content w/select into this page
+        var c = document.createElement('content');
+        c.select = '.page' + page.pageNum;
+        page.appendChild(c);
+      },
+      generateListData: function(info) {
+        var start = info.start * this.pageSize;
+        var end = Math.min(start + this.pageSize * this.numPages, this.count);
+        this.dataStart = start;
+        this.dataEnd = end;
+        this.fire('polymer-list-generate-data', {start: start, end: end});
+        // produce data window
+        for (var i=0, l=end-start; i<l; i++) {
+          this.updateDataAtIndex(start+i);
+        }
+        if (l < this.listData.length) {
+          this.listData.splice(l, this.listData.length - l);
+        }
+      },
+      /*
+      TODO(sorvell): go to some trouble to re-use data objects rather than
+      creating new ones. This allows mdv to avoid re-generating dom and is
+      a massive speed improvement (4x) when items contain custom elements.
+      There's an ongoing effort to make generating custom elements faster, but
+      this approach may just be superior. However, if so, we need better 
+      support from mdv for this use case. By maintaining a copy of the user's
+      data, we lose the live link to it, which is unacceptable. It's therefore 
+      currnetly necessary to call 'updateDataAtIndex' to cause the list's 
+      data to sync to the user's data. In addition, having to mutate data
+      objects is cumbersome and slow. 
+      */
+      /*
+        auto-generate a scope: 
+        {root: template model, item: item data, 
+          page: list page, index: data index, selected: selectedClass if selected}
+      */
+      updateDataAtIndex: function(dataIndex) {
+        var index = dataIndex - this.dataStart;
+        if (index > this.dataEnd) {
+          return;
+        }
+        var item = this.data[dataIndex], d;
+        if (this.useFreshData) {
+          d = this.listData[index] = {
+            item: item,
+            root: this.rootData
+          };
+        } else {
+          if (!this.listData[index]) {
+            d = this.listData[index] = {
+              item: Polymer.extend({}, item),
+              root: this.rootData
+            };
+          } else {
+            d = this.listData[index];
+            // clear previous value, ug
+            for (var a in d.item) {
+              d.item[a] = undefined;
+            }
+            Polymer.extend(d.item, item);
+          }
+        }
+        d.userItem = item;
+        d.index = dataIndex;
+        d.page = 'page' + Math.floor(dataIndex / this.pageSize);
+        d.selected = this.$.selection.isSelected(item) ? 
+            this.selectedClass : '';
+      },
+      templateChanged: function() {
+        if (!this.template) {
+          return;
+        }
+        if (this.template.templateInstance) {
+          this.rootData = this.template.templateInstance.model;
+        }
+        var content = this.template.ref.content;
+        // why isn't this necessary?
+        /*if (content.bindingMap_) {
+          console.log(content.bindingMap_);
+          content.bindingMap_ = null;
+        }*/
+        // add 'page' element to template
+        var page = document.createElement('div');
+        page.setAttribute('class', '{{page}}');
+        while (content.firstChild) {
+          page.appendChild(content.firstChild);
+        }
+        content.appendChild(page);
+        // set template to repeat
+        this.template.bind('repeat', this, 'listData');
+      },
+      listDataChanged: function() {
+        /*if (this.template.templateInstance) {
+          this.template.templateInstance.model.listData = this.listData;
+        }*/
+      },
+      invalidatePages: function(info) {
+        this.generateListData(info);
+        this.super(arguments);
+        if (!this.fixedHeight || !this.rowHeight) {
+          var self = this;
+          Platform.endOfMicrotask(function() {
+            self.invalidate(info);
+          });
+          /*this.onMutation(this, function() {
+            this.invalidate(info);
+          });*/
+        }
+      },
+      mutationNodeForPage: function(page) {
+        return this;
+      },
+      findRowOnPage: function(page, index) {
+        return this.querySelectorAll('.page' + page.pageNum)[index];
+      },
+      tapAction: function(e) {
+        if (e.target !== this) {
+          var n = e.target;
+          var model = n.templateInstance && n.templateInstance.model;
+          if (model) {
+            var item = model.userItem;
+            this.$.selection.select(item);
+            this.asyncFire('polymer-activate', {item: item});
+          }
+        }
+      },
+      selectedAction: function(e, detail) {
+        this.updateDataAtIndex(this.indexOfItem(detail.item));
+      },
+      indexOfItem: function(dataItem) {
+        return this.data.indexOf(dataItem);
+      },
+      /*
+      TODO(sorvell): very similar to polymer-selector; consider refactoring
+      the common bits.
+      */
+      get selection() {
+        return this.$.selection.getSelection();
+      },
+      selectedChanged: function() {
+        this.$.selection.select(this.selected);
+      },
+      clearSelection: function() {
+        if (this.multi) {
+          var s$ = this.selection;
+          for (var i=0, l=s$.length, s; (i<l) && (s=s$[i]); i++) {
+            this.$.selection.setItemSelected(s, false);
+          }
+        } else {
+          this.$.selection.setItemSelected(this.selection, false);
+        }
+        this.$.selection.clear();
+      }
+    });
+  </script>
+</polymer-element>

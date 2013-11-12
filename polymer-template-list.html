@@ -1,0 +1,37 @@
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../polymer-virtual-list/polymer-virtual-list.html">
+
+<polymer-element name="polymer-template-list" extends="polymer-virtual-list" attributes="data template">
+  <script>
+    Polymer('polymer-template-list', {
+      observe: {
+        data: 'reset',
+        template: 'reset'
+      },
+      createdCallback: function() {
+        this.data = [];
+        this.super();
+      },
+      reset: function() {
+        if (this.data) {
+          this.super([this.data.length]);
+        }
+      },
+      generatePageContent: function(page, start, end) {
+        this.super();
+        var data = this.data.slice(start, end);
+        if (data.length && this.template) {
+          var template = this.template.ref || this.template;
+          for (var i=0, l=data.length; i<l; i++) {
+            page.appendChild(template.createInstance(data[i], this.syntax));
+          }
+        }
+      }
+    })
+  </script>
+</polymer-element>
