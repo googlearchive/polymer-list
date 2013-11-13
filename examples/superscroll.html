@@ -26,7 +26,6 @@ license that can be found in the LICENSE file.
 
       .stuff {
         min-height: 60px;
-        background: red !important;
         border-bottom: 1px solid black;
       }
     </style>
@@ -86,27 +85,20 @@ license that can be found in the LICENSE file.
                 return;
               }
               e.stopPropagation();
-              var t = this.shadowRoot.elementFromPoint(e.x, e.y);
+              var t = this.shadowRoot.elementFromPoint(this.startX, e.y);
               if (t && t.classList.contains('letter')) {
                 this.selected = t.textContent;
               }
             },
             up: function(e) {
-              if (this.target) {
-                this.target.style.pointerEvents = null;
-              }
               this.selected = null;
               e.stopPropagation();
             },
             down: function(e) {
               e.target.setPointerCapture(e.pointerId);
               e.tapPrevented = true;
-              if (window.ShadowDOMPolyfill) {
-                e.preventDefault();
-              }
-              if (this.target) {
-                this.target.style.pointerEvents = 'none';
-              }
+              e.preventDefault();
+              this.startX = e.x;
               this.move(e);
               e.stopPropagation();
             },
@@ -137,7 +129,6 @@ license that can be found in the LICENSE file.
         <style>
           polymer-list {
             height: 100%;
-            background: red;
           }
 
           .message {
