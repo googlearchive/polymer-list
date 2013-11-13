@@ -67,7 +67,7 @@ license that can be found in the LICENSE file.
         </style>
         <polymer-selector id="selector" on-polymer-select="{{selectedAction}}" valueattr="textContent" selected="{{selected}}">
           <template repeat="{{letters}}">
-            <div class="letter" on-tap="{{tap}}" on-pointerdown="{{down}}" on-trackstart="{{trackstart}}" on-track="{{track}}" on-trackend="{{trackend}}">{{}}</div>
+            <div class="letter" on-pointerdown="{{down}}" on-pointermove="{{move}}" on-pointerup="{{up}}">{{}}</div>
           </template>
         </polymer-selector>
       </template>
@@ -81,30 +81,34 @@ license that can be found in the LICENSE file.
             ready: function() {
               this.letters = letters;
             },
-            down: function(e) {
-              //e.target.setPointerCapture(e.pointerId);
-            },
-            trackstart: function(e) {
-              if (this.target) {
-                this.target.style.pointerEvents = 'none';
+            move: function(e) {
+              if (!e.pressure) {
+                return;
               }
-            },
-            track: function(e) {
-              var t = e.relatedTarget;
-              if (this.contains(t) && t.classList.contains('letter')) {
+              e.stopPropagation();
+              var t = this.shadowRoot.elementFromPoint(e.x, e.y);
+              if (t && t.classList.contains('letter')) {
                 this.selected = t.textContent;
               }
             },
-            trackend: function(e) {
+            up: function(e) {
               if (this.target) {
                 this.target.style.pointerEvents = null;
               }
               this.selected = null;
+              e.stopPropagation();
             },
-            tap: function() {
-              this.async(function() {
-                this.selected = null;
-              });
+            down: function(e) {
+              e.target.setPointerCapture(e.pointerId);
+              e.tapPrevented = true;
+              if (window.ShadowDOMPolyfill) {
+                e.preventDefault();
+              }
+              if (this.target) {
+                this.target.style.pointerEvents = 'none';
+              }
+              this.move(e);
+              e.stopPropagation();
             },
             selectedAction: function(e, detail) {
               if (detail.isSelected) {
