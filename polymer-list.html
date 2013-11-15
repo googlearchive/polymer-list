@@ -13,6 +13,15 @@ license that can be found in the LICENSE file.
     <shadow></shadow>
   </template>
   <script>
+  (function() {
+    //var extend = Polymer.extend;
+    function extend(obj, mixin) {
+      for (var i in mixin) {
+        obj[i] = mixin[i];
+      }
+      return obj;
+    }
+
     Polymer('polymer-list', {
       selectedClass: 'polymer-selected',
       multi: false,
@@ -80,7 +89,7 @@ license that can be found in the LICENSE file.
         } else {
           if (!this.listData[index]) {
             d = this.listData[index] = {
-              item: Polymer.extend({}, item),
+              item: extend({}, item),
               root: this.rootData
             };
           } else {
@@ -89,7 +98,7 @@ license that can be found in the LICENSE file.
             for (var a in d.item) {
               d.item[a] = undefined;
             }
-            Polymer.extend(d.item, item);
+            extend(d.item, item);
           }
         }
         d.userItem = item;
@@ -184,5 +193,6 @@ license that can be found in the LICENSE file.
         this.$.selection.clear();
       }
     });
+  })();
   </script>
 </polymer-element>

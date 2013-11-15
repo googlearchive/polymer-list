@@ -12,7 +12,6 @@ license that can be found in the LICENSE file.
     <script src="../test.js"></script>
     <link rel="import" href="../../polymer-list.html">
     <style>
-    <style>
       html, body {
         height: 100%;
         margin: 0;
@@ -132,6 +131,7 @@ license that can be found in the LICENSE file.
         Polymer('list-test', {
           count: 50000,
           ready: function() {
+            this.$.list.useFreshData = true;
             this.data = this.generateData();
           },
           generateData: function() {
