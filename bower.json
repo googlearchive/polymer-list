@@ -1,7 +1,7 @@
 {
   "name": "polymer-list",
   "version": "0.0.20131107",
-  "homepage": "https://github.com/polymer-elements/polymer-list",
+  "homepage": "https://github.com/Polymer/polymer-list",
   "authors": [
     "The Polymer Authors"
   ],
@@ -14,10 +14,9 @@
   "license": "BSD",
   "private": true,
   "dependencies": {
-    "platform": "Polymer/platform#master",
     "polymer": "Polymer/polymer#master",
-    "polymer-selection": "polymer-elements/polymer-selection#master",
-    "polymer-selector": "polymer-elements/polymer-selector#master"
+    "polymer-selection": "Polymer/polymer-selection#master",
+    "polymer-selector": "Polymer/polymer-selector#master"
   },
   "ignore": [
     "**/.*",
