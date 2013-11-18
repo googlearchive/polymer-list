@@ -3,7 +3,6 @@
   "private": true,
   "dependencies": {
     "polymer": "Polymer/polymer#master",
-    "polymer-selection": "Polymer/polymer-selection#master",
-    "polymer-virtual-list": "Polymer/polymer-virtual-list#master"
+    "polymer-selection": "Polymer/polymer-selection#master"
   }
 }
