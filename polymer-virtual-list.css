@@ -1,12 +1,19 @@
 :host {
   display: block;
   overflow: hidden;
+  position: relative;
 }
 
 .polymer-list-list {
-  height: 100%;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
   overflow: auto;
   -webkit-overflow-scrolling: touch;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
 }
 
 .polymer-list-viewport {
@@ -21,8 +28,8 @@
 .polymer-list-viewport > * {
   position: absolute;
   overflow: hidden;
-  /*-webkit-transform: translateZ(0);
-  transform: translateZ(0);*/
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
 }
 
 .polymer-list-viewport:not(.horizontal) > * {
