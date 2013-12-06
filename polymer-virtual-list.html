@@ -33,11 +33,14 @@ license that can be found in the LICENSE file.
         horizontal: 'reset'
       },
       ready: function() {
+        this.setupScrollListener();
+        this.reset();
+      },
+      setupScrollListener: function() {
         var self = this;
         this.$.list.addEventListener('scroll', function(e) {
           self.scroll(e);
         })
-        this.reset();
       },
       // re-render at the top
       reset: function() {
