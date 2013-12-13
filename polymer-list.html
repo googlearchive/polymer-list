@@ -108,6 +108,7 @@ license that can be found in the LICENSE file.
             this.selectedClass : '';
       },
       templateChanged: function() {
+        // TODO: handle template changing
         if (!this.template) {
           return;
         }
@@ -128,7 +129,8 @@ license that can be found in the LICENSE file.
         }
         content.appendChild(page);
         // set template to repeat
-        this.template.bind('repeat', this, 'listData');
+        var observer = new PathObserver(this, 'listData');
+        this.template.bind('repeat', observer);
       },
       listDataChanged: function() {
         /*if (this.template.templateInstance) {
