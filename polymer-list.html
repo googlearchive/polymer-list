@@ -116,11 +116,6 @@ license that can be found in the LICENSE file.
           this.rootData = this.template.templateInstance.model;
         }
         var content = this.template.ref.content;
-        // why isn't this necessary?
-        /*if (content.bindingMap_) {
-          console.log(content.bindingMap_);
-          content.bindingMap_ = null;
-        }*/
         // add 'page' element to template
         var page = document.createElement('div');
         page.setAttribute('class', '{{page}}');
@@ -129,8 +124,8 @@ license that can be found in the LICENSE file.
         }
         content.appendChild(page);
         // set template to repeat
-        var observer = new PathObserver(this, 'listData');
-        this.template.bind('repeat', observer);
+        this.template.setAttribute('repeat', '{{listData}}');
+        this.template.model = this;
       },
       listDataChanged: function() {
         /*if (this.template.templateInstance) {
