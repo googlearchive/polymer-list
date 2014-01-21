@@ -27,7 +27,7 @@ license that can be found in the LICENSE file.
     <polymer-virtual-list horizontal count="100000"></polymer-virtual-list>
     
     <script>
-      document.addEventListener('WebComponentsReady', function() {
+      document.addEventListener('polymer-ready', function() {
         var list = document.querySelector('polymer-virtual-list');
         list.addEventListener('polymer-list-generate-page', function(e) {
           var d = e.detail;
