@@ -2,7 +2,8 @@
   "name": "polymer-list",
   "private": true,
   "dependencies": {
-    "polymer": "Polymer/polymer#master",
-    "polymer-selection": "Polymer/polymer-selection#master"
-  }
+    "polymer": "Polymer/polymer#0.2.0",
+    "polymer-selection": "Polymer/polymer-selection#0.2.0"
+  },
+  "version": "0.2.0"
 }
