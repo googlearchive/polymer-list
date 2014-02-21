@@ -115,7 +115,8 @@ license that can be found in the LICENSE file.
         if (this.template.templateInstance) {
           this.rootData = this.template.templateInstance.model;
         }
-        var content = this.template.ref.content;
+        var content = this.template.ref_ ? this.template.ref_.content :
+            this.template.content;
         // add 'page' element to template
         var page = document.createElement('div');
         page.setAttribute('class', '{{page}}');
